@@ -1,3 +1,5 @@
+package ar.edu.itba.cripto.group4.esteganography;
+
 public class ArgumentParser {
     public ArgumentParser(String[] args) {
         if (args.length == 0) {
