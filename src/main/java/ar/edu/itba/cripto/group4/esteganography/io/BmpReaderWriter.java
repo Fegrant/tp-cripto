@@ -10,7 +10,7 @@ public class BmpReaderWriter implements ReaderWriter<BmpReaderWriter> {
     }
 
     @Override
-    public void writeFile(Path filepath, Metadata<BmpReaderWriter> metadata, Stream<byte> data) {
+    public void writeFile(Path filepath, Metadata<BmpReaderWriter> metadata, Stream<Byte> data) {
         throw new RuntimeException("Not Implemented");
     }
 }

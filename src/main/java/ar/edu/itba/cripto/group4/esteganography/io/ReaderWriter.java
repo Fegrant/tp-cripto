@@ -5,5 +5,5 @@ import java.util.stream.Stream;
 
 public interface ReaderWriter<Impl> {
     ReaderOutput<Impl> readFile(Path filepath);
-    void writeFile(Path filepath, Metadata<Impl> metadata, Stream<byte> data);
+    void writeFile(Path filepath, Metadata<Impl> metadata, Stream<Byte> data);
 }
