@@ -25,3 +25,6 @@ replay_pid*
 
 # private files
 .idea/
+
+# build files
+target/
