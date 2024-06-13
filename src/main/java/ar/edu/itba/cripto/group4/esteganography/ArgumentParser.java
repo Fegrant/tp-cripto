@@ -1,6 +1,8 @@
 import enums.*;
 import org.apache.commons.cli.*;
 
+//package ar.edu.itba.cripto.group4.esteganography;
+
 public class ArgumentParser {
 
     private ActionType actionType;
