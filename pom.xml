@@ -24,6 +24,14 @@
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
     </properties>
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.jooq/jool -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jool</artifactId>
+            <version>0.9.15</version>
+        </dependency>
+    </dependencies>
 
     <dependencies>
         <dependency>

@@ -8,5 +8,5 @@ public interface Esteganographer {
     Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data);
     Stream<Byte> unhide(Stream<Byte> image);
 
-    Boolean analyze(InputStream file) throws IOException;
+    boolean analyze(InputStream file) throws IOException;
 }
