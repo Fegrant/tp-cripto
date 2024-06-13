@@ -1,4 +1,4 @@
-package enums;
+package ar.edu.itba.cripto.group4.esteganography.enums;
 
 public enum StegType {
     LSB1,

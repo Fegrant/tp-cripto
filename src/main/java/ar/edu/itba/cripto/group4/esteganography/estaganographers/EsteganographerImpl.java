@@ -2,6 +2,8 @@ package ar.edu.itba.cripto.group4.esteganography.estaganographers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.stream.Stream;
 
 public class EsteganographerImpl implements Esteganographer {
@@ -10,13 +12,13 @@ public class EsteganographerImpl implements Esteganographer {
     private final double CHI_SQUARED_CRITICAL = 3.841;      // Valor crítico para p=0.05 y 1 grado de libertad
 
     @Override
-    public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data) {
-        return null;
+    public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data, EsteganographerMethod method) {
+        return method.hide(image, data);
     }
 
     @Override
-    public Stream<Byte> unhide(Stream<Byte> image) {
-        return null;
+    public Stream<Byte> unhide(Stream<Byte> image, EsteganographerMethod method) {
+        return method.unhide(image);
     }
 
     @Override

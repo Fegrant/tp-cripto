@@ -2,10 +2,13 @@ package ar.edu.itba.cripto.group4.esteganography;
 
 import ar.edu.itba.cripto.group4.esteganography.estaganographers.Esteganographer;
 import ar.edu.itba.cripto.group4.esteganography.estaganographers.EsteganographerImpl;
+import ar.edu.itba.cripto.group4.esteganography.io.BmpReaderWriter;
+import ar.edu.itba.cripto.group4.esteganography.io.ReaderOutput;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) throws IOException {
