@@ -1,6 +1,6 @@
 package ar.edu.itba.cripto.group4.esteganography;
 
-import enums.*;
+import ar.edu.itba.cripto.group4.esteganography.enums.*;
 import org.apache.commons.cli.*;
 
 public class ArgumentParser {

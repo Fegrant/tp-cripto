@@ -1,5 +1,7 @@
 package ar.edu.itba.cripto.group4.esteganography.estaganographers;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -15,13 +17,18 @@ public class EncrypedEsteg<T extends Esteganographer> implements Esteganographer
     }
 
     @Override
-    public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data){
-        return esteganographer.hide(image, encrypt(data));
+    public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data, EsteganographerMethod method){
+        return esteganographer.hide(image, encrypt(data), method);
     }
 
     @Override
-    public Stream<Byte> unhide(Stream<Byte> image){
-        return decrypt(esteganographer.unhide(image));
+    public Stream<Byte> unhide(Stream<Byte> image, EsteganographerMethod method){
+        return decrypt(esteganographer.unhide(image, method));
+    }
+
+    @Override
+    public Boolean analyze(InputStream file) throws IOException {
+        return esteganographer.analyze(file);
     }
 
     private Stream<Byte> encrypt(Stream<Byte> data) {
