@@ -70,7 +70,13 @@ public enum EsteganographerMethod {
                     new int[]{0, 0, 0, 0},
                     (a, b) -> new int[]{a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]}
             );
-            Stream<Byte> stegged = zip(image, sparse_data).map(x ->
+            Byte[] head = new Byte[4];
+            for (int i = 0; i < summed_patterns.length; i++) {
+                if (summed_patterns[i] >= 0)
+                    head[i] = 1;
+            }
+            sparse_data = Stream.concat(Arrays.stream(head), sparse_data);
+            return zip(image, sparse_data).map(x ->
                     (byte)(((x.v1() >> 1) << 1) | x.v2())
             ).stream().map(x -> {
                     byte pattern = (byte)(x & pattern_mask);
@@ -79,12 +85,6 @@ public enum EsteganographerMethod {
                     return (byte)(x ^ 0b00000001);
                 }
             );
-            Byte[] head = new Byte[4];
-            for (int i = 0; i < summed_patterns.length; i++) {
-                if (summed_patterns[i] >= 0)
-                    head[i] = 1;
-            }
-            return Stream.concat(Arrays.stream(head), stegged);
         }
 
         public Stream<Byte> unhide(Stream<Byte> image) {
