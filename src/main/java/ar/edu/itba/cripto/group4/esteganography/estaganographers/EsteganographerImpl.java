@@ -18,7 +18,7 @@ public class EsteganographerImpl implements Esteganographer {
 
     @Override
     public Stream<Byte> unhide(Stream<Byte> image, EsteganographerMethod method) {
-        return method.unhide(image);
+        return method.unhide(image, Stream.empty());
     }
 
     @Override
