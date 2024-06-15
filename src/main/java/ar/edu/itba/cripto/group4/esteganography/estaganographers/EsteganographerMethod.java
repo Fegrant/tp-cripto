@@ -16,7 +16,7 @@ public enum EsteganographerMethod {
             ).stream();
         }
 
-        public Stream<Byte> unhide(Stream<Byte> image) {
+        public Stream<Byte> unhide(Stream<Byte> image, Stream<Byte> meta) {
             Byte[] fileBytesOnBits = (Byte[])(image.map(b -> (byte)(b & 1)).toArray());
             Byte[] fileBytes = new Byte[fileBytesOnBits.length / 8];
             for(int i=0 ; i <= fileBytesOnBits.length ; i++) {
@@ -41,7 +41,7 @@ public enum EsteganographerMethod {
             ).stream();
         }
 
-        public Stream<Byte> unhide(Stream<Byte> image) {
+        public Stream<Byte> unhide(Stream<Byte> image, Stream<Byte> meta) {
             Byte[] fileBytesOnBits = (Byte[])(image.map(b -> (byte)(b & 15)).toArray());
             Byte[] fileBytes = new Byte[fileBytesOnBits.length / 2];
             for(int i=0 ; i <= fileBytesOnBits.length ; i++) {
@@ -60,6 +60,7 @@ public enum EsteganographerMethod {
     LSBImproved{
         private static final byte[] patterns = new byte[]{0b00000000, 0b00000010, 0b00000100, 0b00000110};
         private static final byte pattern_mask = 0b00000110;
+        private static final byte unhide_mask = 0b00000001;
 
         public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data) {
             Stream<Byte> sparse_data = data.flatMap(b -> Stream.of(unnest_bytes(b)));
@@ -87,8 +88,17 @@ public enum EsteganographerMethod {
             );
         }
 
-        public Stream<Byte> unhide(Stream<Byte> image) {
-            return Stream.empty();
+        public Stream<Byte> unhide(Stream<Byte> image, Stream<Byte> meta) {
+            Integer[] used_patterns = (Integer[])meta.map(b -> b & unhide_mask).toArray();
+            Byte[] fileBytesOnBits = (Byte[])image.map(b -> {
+                int flip = used_patterns[pattern_index((byte)(b & pattern_mask))];
+                return (byte)(flip ^ (b & unhide_mask));
+            }).toArray();
+            Byte[] fileBytes = new Byte[fileBytesOnBits.length / 8];
+            for(int i=0 ; i <= fileBytesOnBits.length ; i++) {
+                fileBytes[i / 8] = (byte)(fileBytes[i / 8] + (byte)(fileBytesOnBits[i] << (7 - (i % 8))));
+            }
+            return Arrays.stream(fileBytes);
         }
 
         private static Byte[] unnest_bytes(Byte data_byte) {
@@ -120,6 +130,6 @@ public enum EsteganographerMethod {
     };
 
     abstract Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data);
-    abstract Stream<Byte> unhide(Stream<Byte> image);
+    abstract Stream<Byte> unhide(Stream<Byte> image, Stream<Byte> meta);
 
 }
