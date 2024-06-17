@@ -1,15 +1,14 @@
-package ar.edu.itba.cripto.group4.esteganography.estaganographers;
+package ar.edu.itba.cripto.group4.steganography.steganographers;
 
-import ar.edu.itba.cripto.group4.esteganography.io.Metadata;
+import ar.edu.itba.cripto.group4.steganography.io.Metadata;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.jooq.lambda.Seq.zip;
 
-public enum EsteganographerMethod {
+public enum SteganographerMethod {
     LSB1{
         public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data) {
             Stream<Byte> sparse_data = data.flatMap(b -> Stream.of(unnest_bytes(b)));
@@ -21,7 +20,6 @@ public enum EsteganographerMethod {
         public Stream<Byte> unhide(Stream<Byte> image, Metadata meta) {
             List<Byte> fileBytesOnBits = image.map(b -> (Byte)(byte)(b & 1)).toList();
             Byte[] fileBytes = new Byte[fileBytesOnBits.size() / 8 + 1];
-            System.out.println(fileBytes.length);
             for(int i=0 ; i < fileBytesOnBits.size() ; i++) {
                 final int idx = i / 8;
                 if(fileBytes[idx] == null) fileBytes[idx] = 0;

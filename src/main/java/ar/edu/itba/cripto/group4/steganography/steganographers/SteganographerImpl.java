@@ -1,25 +1,23 @@
-package ar.edu.itba.cripto.group4.esteganography.estaganographers;
+package ar.edu.itba.cripto.group4.steganography.steganographers;
 
-import ar.edu.itba.cripto.group4.esteganography.io.Metadata;
+import ar.edu.itba.cripto.group4.steganography.io.Metadata;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.stream.Stream;
 
-public class EsteganographerImpl implements Esteganographer {
+public class SteganographerImpl implements Steganographer {
 
     private static final int HEADER_SIZE = 54;
     private static final double CHI_SQUARED_CRITICAL = 3.841;      // Valor crítico para p=0.05 y 1 grado de libertad
 
     @Override
-    public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data, EsteganographerMethod method) {
+    public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data, SteganographerMethod method) {
         return method.hide(image, data);
     }
 
     @Override
-    public Stream<Byte> unhide(Stream<Byte> image, Metadata meta, EsteganographerMethod method) {
+    public Stream<Byte> unhide(Stream<Byte> image, Metadata meta, SteganographerMethod method) {
         return method.unhide(image, meta);
     }
 

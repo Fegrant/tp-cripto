@@ -1,4 +1,4 @@
-package ar.edu.itba.cripto.group4.esteganography.enums;
+package ar.edu.itba.cripto.group4.steganography.enums;
 
 public enum ActionType {
     EMBED,

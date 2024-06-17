@@ -1,6 +1,6 @@
-package ar.edu.itba.cripto.group4.esteganography.io.bmp;
+package ar.edu.itba.cripto.group4.steganography.io.bmp;
 
-import ar.edu.itba.cripto.group4.esteganography.io.*;
+import ar.edu.itba.cripto.group4.steganography.io.*;
 
 import java.io.*;
 import java.nio.file.Path;

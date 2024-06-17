@@ -1,7 +1,7 @@
-package ar.edu.itba.cripto.group4.esteganography.io.bmp;
+package ar.edu.itba.cripto.group4.steganography.io.bmp;
 
-import ar.edu.itba.cripto.group4.esteganography.io.Metadata;
-import ar.edu.itba.cripto.group4.esteganography.io.ReaderOutput;
+import ar.edu.itba.cripto.group4.steganography.io.Metadata;
+import ar.edu.itba.cripto.group4.steganography.io.ReaderOutput;
 
 import java.util.stream.Stream;
 
