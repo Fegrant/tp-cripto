@@ -1,5 +1,7 @@
 package ar.edu.itba.cripto.group4.esteganography.estaganographers;
 
+import ar.edu.itba.cripto.group4.esteganography.io.Metadata;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -8,8 +10,8 @@ import java.util.stream.Stream;
 
 public class EsteganographerImpl implements Esteganographer {
 
-    private final int HEADER_SIZE = 54;
-    private final double CHI_SQUARED_CRITICAL = 3.841;      // Valor crítico para p=0.05 y 1 grado de libertad
+    private static final int HEADER_SIZE = 54;
+    private static final double CHI_SQUARED_CRITICAL = 3.841;      // Valor crítico para p=0.05 y 1 grado de libertad
 
     @Override
     public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data, EsteganographerMethod method) {
@@ -17,12 +19,12 @@ public class EsteganographerImpl implements Esteganographer {
     }
 
     @Override
-    public Stream<Byte> unhide(Stream<Byte> image, EsteganographerMethod method) {
-        return method.unhide(image, Stream.empty());
+    public Stream<Byte> unhide(Stream<Byte> image, Metadata meta, EsteganographerMethod method) {
+        return method.unhide(image, meta);
     }
 
     @Override
-    public Boolean analyze(InputStream is) throws IOException {
+    public boolean analyze(InputStream is) throws IOException {
         // TODO: Ver otros métodos (ahora usa análisis chi-cuadrado de bits menos significativos)
         is.skip(HEADER_SIZE);
         byte[] imageData = is.readAllBytes();
