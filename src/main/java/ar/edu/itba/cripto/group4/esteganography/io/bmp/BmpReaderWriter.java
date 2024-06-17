@@ -4,16 +4,17 @@ import ar.edu.itba.cripto.group4.esteganography.io.*;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class BmpReaderWriter implements ReaderWriter<BmpReaderWriter> {
+public class BmpReaderWriter implements ReaderWriter {
     private static final int HEADER_SIZE = 54;
 
     @Override
-    public ReaderOutput<BmpReaderWriter> readFile(Path filepath) {
+    public ReaderOutput readFile(Path filepath) {
         BufferedInputStream is = null;
         try {
             is = new BufferedInputStream(new FileInputStream(filepath.toString()));
@@ -34,12 +35,14 @@ public class BmpReaderWriter implements ReaderWriter<BmpReaderWriter> {
 
             // TODO: encontrar una mejor solución?
             final byte[] firstFour = is.readNBytes(4);
+            final Byte[] firstFourOut = new Byte[firstFour.length];
+            Arrays.setAll(firstFourOut, n -> firstFour[n]);
 
             // Reseteo a la posición inicial
             is.reset();
 
-            var data = makeDataStream(is, firstFour);
-            var metadata = new BmpMetadata(fileSize, firstFour, header);
+            var data = makeDataStream(is);
+            var metadata = new BmpMetadata(fileSize, firstFourOut, header);
             return new BmpReaderOutput(metadata, data);
         } catch (IOException e) {
             throw new ReaderException("Could not read the file.");
@@ -53,9 +56,8 @@ public class BmpReaderWriter implements ReaderWriter<BmpReaderWriter> {
     }
 
     @Override
-    public void writeFile(Path filepath, Metadata<BmpReaderWriter> metadata, Stream<Byte> data) {
+    public void writeFile(Path filepath, Stream<Byte> data) {
         try(final var outStream = new BufferedOutputStream(new FileOutputStream(filepath.toString()))) {
-            outStream.write(metadata.getHeader());
             data.forEach(b -> {
                 try {
                     outStream.write((int)b % 0xFF);
@@ -68,7 +70,7 @@ public class BmpReaderWriter implements ReaderWriter<BmpReaderWriter> {
         }
     }
 
-    private Stream<Byte> makeDataStream(InputStream is, byte[] firstFour) {
+    private Stream<Byte> makeDataStream(InputStream is) {
         final Iterator<Byte> iter = new Iterator<>() {
             int next;
 

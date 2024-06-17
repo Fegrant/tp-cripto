@@ -6,16 +6,16 @@ import ar.edu.itba.cripto.group4.esteganography.io.ReaderOutput;
 import java.util.stream.Stream;
 
 public record BmpReaderOutput (
-    Metadata<BmpReaderWriter> metadata,
+    Metadata metadata,
     Stream<Byte> data
-) implements ReaderOutput<BmpReaderWriter> {
+) implements ReaderOutput {
     @Override
     public Stream<Byte> getData() {
         return data;
     }
 
     @Override
-    public Metadata<BmpReaderWriter> getMetadata() {
+    public Metadata getMetadata() {
         return metadata;
     }
 }

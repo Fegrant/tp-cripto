@@ -4,9 +4,9 @@ import ar.edu.itba.cripto.group4.esteganography.io.Metadata;
 
 public record BmpMetadata(
     int totalSize,
-    byte[] firstFour,
+    Byte[] firstFour,
     byte[] header
-) implements Metadata<BmpReaderWriter> {
+) implements Metadata {
     @Override
     public int getTotalFileSize() {
         return totalSize;
@@ -23,7 +23,7 @@ public record BmpMetadata(
     }
 
     @Override
-    public byte[] getFirstFour() {
+    public Byte[] getFirstFour() {
         return firstFour;
     }
 

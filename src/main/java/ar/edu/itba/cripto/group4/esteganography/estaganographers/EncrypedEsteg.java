@@ -1,5 +1,7 @@
 package ar.edu.itba.cripto.group4.esteganography.estaganographers;
 
+import ar.edu.itba.cripto.group4.esteganography.io.Metadata;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Function;
@@ -22,12 +24,12 @@ public class EncrypedEsteg<T extends Esteganographer> implements Esteganographer
     }
 
     @Override
-    public Stream<Byte> unhide(Stream<Byte> image, EsteganographerMethod method){
-        return decrypt(esteganographer.unhide(image, method));
+    public Stream<Byte> unhide(Stream<Byte> image, Metadata meta, EsteganographerMethod method){
+        return decrypt(esteganographer.unhide(image, meta, method));
     }
 
     @Override
-    public Boolean analyze(InputStream file) throws IOException {
+    public boolean analyze(InputStream file) throws IOException {
         return esteganographer.analyze(file);
     }
 

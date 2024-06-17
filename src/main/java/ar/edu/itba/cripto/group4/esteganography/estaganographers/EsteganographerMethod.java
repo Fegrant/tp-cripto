@@ -1,11 +1,13 @@
 package ar.edu.itba.cripto.group4.esteganography.estaganographers;
 
-import org.jooq.lambda.Seq;
+import ar.edu.itba.cripto.group4.esteganography.io.Metadata;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
-import static org.jooq.lambda.Seq.*;
+import static org.jooq.lambda.Seq.zip;
 
 public enum EsteganographerMethod {
     LSB1{
@@ -16,13 +18,16 @@ public enum EsteganographerMethod {
             ).stream();
         }
 
-        public Stream<Byte> unhide(Stream<Byte> image, Stream<Byte> meta) {
-            Byte[] fileBytesOnBits = (Byte[])(image.map(b -> (byte)(b & 1)).toArray());
-            Byte[] fileBytes = new Byte[fileBytesOnBits.length / 8];
-            for(int i=0 ; i <= fileBytesOnBits.length ; i++) {
-                fileBytes[i / 8] = (byte)(fileBytes[i / 8] + (byte)(fileBytesOnBits[i] << (7 - (i % 8))));
+        public Stream<Byte> unhide(Stream<Byte> image, Metadata meta) {
+            List<Byte> fileBytesOnBits = image.map(b -> (Byte)(byte)(b & 1)).toList();
+            Byte[] fileBytes = new Byte[fileBytesOnBits.size() / 8 + 1];
+            System.out.println(fileBytes.length);
+            for(int i=0 ; i < fileBytesOnBits.size() ; i++) {
+                final int idx = i / 8;
+                if(fileBytes[idx] == null) fileBytes[idx] = 0;
+                fileBytes[idx] = (byte)(fileBytes[idx] + (byte)(fileBytesOnBits.get(i) << (7 - (i % 8))));
             }
-            return Arrays.stream(fileBytes);
+            return Arrays.stream(fileBytes).skip(4);
         }
 
         private static Byte[] unnest_bytes(Byte data_byte) {
@@ -41,7 +46,7 @@ public enum EsteganographerMethod {
             ).stream();
         }
 
-        public Stream<Byte> unhide(Stream<Byte> image, Stream<Byte> meta) {
+        public Stream<Byte> unhide(Stream<Byte> image, Metadata meta) {
             Byte[] fileBytesOnBits = (Byte[])(image.map(b -> (byte)(b & 15)).toArray());
             Byte[] fileBytes = new Byte[fileBytesOnBits.length / 2];
             for(int i=0 ; i <= fileBytesOnBits.length ; i++) {
@@ -88,8 +93,8 @@ public enum EsteganographerMethod {
             );
         }
 
-        public Stream<Byte> unhide(Stream<Byte> image, Stream<Byte> meta) {
-            Integer[] used_patterns = (Integer[])meta.map(b -> b & unhide_mask).toArray();
+        public Stream<Byte> unhide(Stream<Byte> image, Metadata meta) {
+            Integer[] used_patterns = (Integer[]) Arrays.stream(meta.getFirstFour()).map(b -> b & unhide_mask).toArray();
             Byte[] fileBytesOnBits = (Byte[])image.map(b -> {
                 int flip = used_patterns[pattern_index((byte)(b & pattern_mask))];
                 return (byte)(flip ^ (b & unhide_mask));
@@ -130,6 +135,6 @@ public enum EsteganographerMethod {
     };
 
     abstract Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data);
-    abstract Stream<Byte> unhide(Stream<Byte> image, Stream<Byte> meta);
+    abstract Stream<Byte> unhide(Stream<Byte> image, Metadata meta);
 
 }
