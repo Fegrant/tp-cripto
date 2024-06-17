@@ -4,6 +4,6 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public interface ReaderWriter<Impl> {
-    ReaderOutput<Impl> readFile(Path filepath);
+    ReaderOutput<Impl> readFile(Path filepath) throws ReaderException;
     void writeFile(Path filepath, Metadata<Impl> metadata, Stream<Byte> data);
 }
