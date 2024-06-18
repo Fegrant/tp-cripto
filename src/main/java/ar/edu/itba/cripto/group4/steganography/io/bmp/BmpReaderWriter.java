@@ -29,6 +29,11 @@ public class BmpReaderWriter implements ReaderWriter {
             int fileSize = ((header[5] & 0xff) << 24) | ((header[4] & 0xff) << 16) |
                 ((header[3] & 0xff) << 8) | (header[2] & 0xff);
 
+            int dataOffset = ((header[13] & 0xff) << 24) | ((header[12] & 0xff) << 16) |
+                    ((header[11] & 0xff) << 8) | (header[10] & 0xff);
+
+            is.readNBytes(dataOffset - HEADER_SIZE);
+
             // Marco la posición inicial
             if (!is.markSupported()) throw new IllegalStateException();
             is.mark(1024);

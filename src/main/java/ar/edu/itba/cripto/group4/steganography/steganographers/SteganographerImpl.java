@@ -23,7 +23,7 @@ public class SteganographerImpl implements Steganographer {
         concatenated.addAll(dataList);
         
         final var splitName = dataFilename.split("\\.");
-        final var ext = splitName[splitName.length-1];
+        final var ext = "." + splitName[splitName.length-1];
         
         concatenated.addAll(Arrays.asList(Utils.stringToBytes(ext)));
         concatenated.add((byte)0);
@@ -51,8 +51,9 @@ public class SteganographerImpl implements Steganographer {
         }
         
         final var dataLen = Utils.intFromBytes(decryptedData.subList(0, 4));
-        final var fileData = decryptedData.subList(4, dataLen + 4);
-        final var ext = Utils.stringFromBytes(decryptedData.subList(dataLen + 4, decryptedData.size()-2));
+        final var fileData = decryptedData.subList(4, 4 + dataLen);
+        final var stringWithExt = Utils.stringFromBytes(decryptedData.subList(4 + dataLen, decryptedData.size()-2));
+        final String ext = stringWithExt.split("\0", 2)[0];
         
         return new UnhideOutput(fileData, ext);
     }
