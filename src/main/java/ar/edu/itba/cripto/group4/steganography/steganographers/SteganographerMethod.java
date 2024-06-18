@@ -128,11 +128,11 @@ public enum SteganographerMethod {
         public Stream<Byte> unhide(Stream<Byte> image, Metadata meta) {
             List<Integer> used_patterns = Arrays.stream(meta.getFirstFour()).map(b -> b & unhide_mask).toList();
             List<Byte> fileBytesOnBits = new ArrayList<>(image.map(b -> {
-                // TODO: Chequear que sean ==
                 int flip = used_patterns.get((b & pattern_mask) >> 1);
                 // int flip = used_patterns.get(pattern_index((byte) (b & pattern_mask)));
                 return (byte) (flip ^ (b & unhide_mask));
             }).toList());
+            fileBytesOnBits = fileBytesOnBits.subList(4, fileBytesOnBits.size());
             Byte[] fileBytes = new Byte[fileBytesOnBits.size() / 8 + 1];
             for(int i=0 ; i < fileBytesOnBits.size() ; i++) {
                 final int idx = i / 8;
@@ -140,7 +140,7 @@ public enum SteganographerMethod {
                 fileBytes[idx] = (byte)(fileBytes[idx] + (byte)(fileBytesOnBits.get(i) << (7 - (i % 8))));
             }
             /*
-            try {//} + unhideOutput.extension())) {
+            try {
                 FileOutputStream fos = new FileOutputStream("output.bin");
                 for (Byte b : fileBytes) {
                     fos.write(b);

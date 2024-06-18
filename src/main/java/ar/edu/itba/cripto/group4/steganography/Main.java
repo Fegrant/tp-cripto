@@ -19,10 +19,10 @@ public class Main {
         
         //final var hideInput = Arrays.stream(Utils.stringToBytes("Hola!")).toList().stream();
         
-        String path = "test_files/ladoLSB1.bmp";
+        String path = "test_files/ladoLSBI.bmp";
         final ReaderOutput ro = rw.readFile(Path.of(path));
 
-        final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSB1, null);
+        final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSBI, null);
 
         try (FileOutputStream fos = new FileOutputStream("imagen"+ unhideOutput.extension())){
             unhideOutput.data().forEach(b -> {
@@ -33,6 +33,7 @@ public class Main {
                 }
             });
         }
+
         // rw.writeFile(Path.of("image" + unhideOutput.extension()), unhideOutput.data().stream(), ro.getMetadata());
         
         // final var hideOutput = steganographer.hide(ro.getData(), hideInput, "hola.txt", SteganographerMethod.LSB1, null);
