@@ -9,6 +9,7 @@ import ar.edu.itba.cripto.group4.steganography.io.bmp.BmpReaderWriter;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -16,11 +17,14 @@ public class Main {
         Steganographer steganographer = new SteganographerImpl();
         final ReaderWriter rw = new BmpReaderWriter();
         
-        String path = "test_files/ladoLSB1.bmp";
-        final ReaderOutput ro = rw.readFile(Path.of(path));
-        final var outList = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSB1).toList();
+        final var hideInput = Arrays.stream(Utils.stringToBytes("Hola!")).toList().stream();
         
-        rw.writeFile(Path.of("imagen.png"), outList.stream().limit(outList.size() - 4));
+        String path = "test_files/lado.bmp";
+        final ReaderOutput ro = rw.readFile(Path.of(path));
+        
+        final var hideOutput = steganographer.hide(ro.getData(), hideInput, "hola.txt", SteganographerMethod.LSB1, null);
+        
+        rw.writeFile(Path.of("ladoLSB1.bmp"), hideOutput, ro.getMetadata());
         
         
 //        File bmpFile = new File(path);

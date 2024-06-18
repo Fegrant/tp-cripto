@@ -42,7 +42,7 @@ public class BmpReaderWriter implements ReaderWriter {
             is.reset();
 
             var data = makeDataStream(is);
-            var metadata = new BmpMetadata(fileSize, firstFourOut, header);
+            var metadata = new BmpMetadata(fileSize, firstFourOut, header, filepath.getFileName().toString());
             return new BmpReaderOutput(metadata, data);
         } catch (IOException e) {
             throw new ReaderException("Could not read the file.");
@@ -56,8 +56,9 @@ public class BmpReaderWriter implements ReaderWriter {
     }
 
     @Override
-    public void writeFile(Path filepath, Stream<Byte> data) {
+    public void writeFile(Path filepath, Stream<Byte> data, Metadata meta) {
         try(final var outStream = new BufferedOutputStream(new FileOutputStream(filepath.toString()))) {
+            outStream.write(meta.getHeader());
             data.forEach(b -> {
                 try {
                     outStream.write((int)b % 0xFF);

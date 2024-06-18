@@ -5,7 +5,8 @@ import ar.edu.itba.cripto.group4.steganography.io.Metadata;
 public record BmpMetadata(
     int totalSize,
     Byte[] firstFour,
-    byte[] header
+    byte[] header,
+    String filename
 ) implements Metadata {
     @Override
     public int getTotalFileSize() {
@@ -30,5 +31,10 @@ public record BmpMetadata(
     @Override
     public byte[] getHeader() {
         return header;
+    }
+
+    @Override
+    public String getFilename() {
+        return filename;
     }
 }

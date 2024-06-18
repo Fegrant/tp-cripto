@@ -10,4 +10,6 @@ public interface Metadata {
     Byte[] getFirstFour();
     
     byte[] getHeader();
+    
+    String getFilename();
 }
