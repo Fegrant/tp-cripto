@@ -47,7 +47,6 @@ public class EncryptionImpl implements Encryption {
             byte[] encryptedData = cipher.doFinal(dataBytes);
 
             System.out.println("Encrypted data size: " + encryptedData.length);
-            System.out.println("Encrypted data: " + Arrays.toString(encryptedData));
             if (encMode != EncryptionMode.ECB) {
                 System.out.println("IV used for encryption (hex): " + bytesToHex(iv.getIV()));
             }
@@ -80,7 +79,6 @@ public class EncryptionImpl implements Encryption {
             byte[] decryptedData = cipher.doFinal(dataArray);
 
             System.out.println("Decrypted data size: " + decryptedData.length);
-            System.out.println("Decrypted data: " + Arrays.toString(decryptedData));
             System.out.println("Derived key for decryption (hex): " + bytesToHex(derivedKey.getEncoded()));
             if (encMode != EncryptionMode.ECB) {
                 System.out.println("IV used for decryption (hex): " + bytesToHex(derivedIv.getIV()));

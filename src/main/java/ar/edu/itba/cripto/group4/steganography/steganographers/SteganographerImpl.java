@@ -27,7 +27,9 @@ public class SteganographerImpl implements Steganographer {
         
         concatenated.addAll(Arrays.asList(Utils.stringToBytes(ext)));
         concatenated.add((byte)0);
-        
+
+        System.out.println(concatenated);
+
         if(encrypt == null) return method.hide(image, concatenated.stream());
         
         final var encData = encrypt.apply(concatenated);
@@ -51,6 +53,7 @@ public class SteganographerImpl implements Steganographer {
         }
         
         final var dataLen = Utils.intFromBytes(decryptedData.subList(0, 4));
+        System.out.println(dataLen);
         final var fileData = decryptedData.subList(4, 4 + dataLen);
         final var stringWithExt = Utils.stringFromBytes(decryptedData.subList(4 + dataLen, decryptedData.size()-2));
         final String ext = stringWithExt.split("\0", 2)[0];
