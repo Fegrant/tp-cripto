@@ -19,8 +19,10 @@ public class Main {
         final ReaderWriter rw = new BmpReaderWriter();
 
         Path baseImagePath = Path.of("test_files/ladoLSBI.bmp");
+
         ReaderOutput ro = rw.readFile(baseImagePath);
 
+        /*
         final var hideInput = Arrays.stream(Utils.stringToBytes("Hola!")).toList().stream();
         final var hideOutput = steganographer.hide(ro.getData(), hideInput, "hola.txt", SteganographerMethod.LSBI, null);
 
@@ -29,9 +31,11 @@ public class Main {
 
         ro = rw.readFile(steggedImagePath);
 
+         */
+
         final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSBI, null);
 
-        try (FileOutputStream fos = new FileOutputStream("salida"+ unhideOutput.extension())){
+        try (FileOutputStream fos = new FileOutputStream("salida" + unhideOutput.extension())){
             unhideOutput.data().forEach(b -> {
                 try {
                     fos.write(b);

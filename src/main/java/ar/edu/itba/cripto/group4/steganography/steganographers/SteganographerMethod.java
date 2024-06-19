@@ -157,26 +157,32 @@ public enum SteganographerMethod {
         }
 
         public Stream<Byte> unhide(Stream<Byte> image, Metadata meta) {
-            List<Integer> used_patterns = Arrays.stream(meta.getFirstFour()).map(b -> b & unhide_mask).toList();
+            List<Boolean> used_patterns = Arrays.stream(meta.getFirstFour()).map(b -> (byte)(b & unhide_mask) == 1).toList();
             image = image.skip(4);
-            // System.out.println(image.toList().subList(0, 50));
-            System.out.println(used_patterns);
             List<Byte> fileBytesOnBits = new ArrayList<>(image.map(b -> {
-                boolean flip = used_patterns.get((b & pattern_mask) >> 1) == 1;
+                // boolean flip = used_patterns.get((b & pattern_mask) >> 1) == 1;
+                boolean flip = used_patterns.get((b & pattern_mask) >> 1);
+                byte maskedB = (byte)(b & unhide_mask);
                 if (flip) {
-                    return (byte)(0b00000001 ^ (b & unhide_mask));
-                } else {
-                    return (byte)(b & unhide_mask);
+                    maskedB ^= 0b00000001;
                 }
+                return maskedB;
             }).toList());
-            System.out.println(fileBytesOnBits.subList(0, 50));
+
+            // Ya leí los 4 bytes de la imagen BGRB
+            // Después queda en orden GRBGRBGRB..., entonces cono el canal R no tienen info, lo skipeo
+            List<Byte> fileBytesOnBitsBG = new ArrayList<>();
+            for (int j=0 ; j < fileBytesOnBits.size() ; j++) {
+                if (j % 3 != 1) fileBytesOnBitsBG.add(fileBytesOnBits.get(j));
+            }
+            fileBytesOnBits = fileBytesOnBitsBG;
+
             Byte[] fileBytes = new Byte[fileBytesOnBits.size() / 8 + 1];
             for(int i=0 ; i < fileBytesOnBits.size() ; i++) {
                 final int idx = i / 8;
                 if (fileBytes[idx] == null) fileBytes[idx] = 0;
                 fileBytes[idx] = (byte)(fileBytes[idx] + (byte)(fileBytesOnBits.get(i) << (7 - (i % 8))));
             }
-            System.out.println(Arrays.stream(fileBytes).toList().subList(0, 14));
             return Arrays.stream(fileBytes);
         }
 
