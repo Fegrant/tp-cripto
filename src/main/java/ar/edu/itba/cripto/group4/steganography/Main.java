@@ -1,5 +1,7 @@
 package ar.edu.itba.cripto.group4.steganography;
 
+import ar.edu.itba.cripto.group4.steganography.encryption.Encryption;
+import ar.edu.itba.cripto.group4.steganography.encryption.EncryptionImpl;
 import ar.edu.itba.cripto.group4.steganography.steganographers.Steganographer;
 import ar.edu.itba.cripto.group4.steganography.steganographers.SteganographerImpl;
 import ar.edu.itba.cripto.group4.steganography.steganographers.SteganographerMethod;
@@ -13,16 +15,17 @@ import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        ArgumentParser argumentParser = new ArgumentParser(args);
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        Encryption encryption = new EncryptionImpl(argumentParser);
         Steganographer steganographer = new SteganographerImpl();
         final ReaderWriter rw = new BmpReaderWriter();
-        
+
         //final var hideInput = Arrays.stream(Utils.stringToBytes("Hola!")).toList().stream();
-        
-        String path = "test_files/ladoLSBI.bmp";
+
+        String path = "test_files/ladoLSBIaesofbsalt0.bmp";
         final ReaderOutput ro = rw.readFile(Path.of(path));
 
-        final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSBI, null);
+        final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSBI, encryption::decrypt);
 
         try (FileOutputStream fos = new FileOutputStream("imagen"+ unhideOutput.extension())){
             unhideOutput.data().forEach(b -> {
@@ -35,12 +38,12 @@ public class Main {
         }
 
         // rw.writeFile(Path.of("image" + unhideOutput.extension()), unhideOutput.data().stream(), ro.getMetadata());
-        
+
         // final var hideOutput = steganographer.hide(ro.getData(), hideInput, "hola.txt", SteganographerMethod.LSB1, null);
-        
+
         // rw.writeFile(Path.of("ladoLSB1.bmp"), hideOutput, ro.getMetadata());
-        
-        
+
+
 //        File bmpFile = new File(path);
 //        boolean isBmpFile = steganographer.analyze(new FileInputStream(bmpFile));
 //
