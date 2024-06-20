@@ -26,18 +26,17 @@ public class Main {
 
         ReaderOutput ro = rw.readFile(baseImagePath);
 
-        /*
         final var hideInput = Arrays.stream(Utils.stringToBytes("Hola!")).toList().stream();
         final var hideOutput = steganographer.hide(ro.getData(), hideInput, "hola.txt", SteganographerMethod.LSBI, null);
 
         Path steggedImagePath = Path.of("steg.bmp");
         rw.writeFile(steggedImagePath, hideOutput, ro.getMetadata());
 
-        ro = rw.readFile(steggedImagePath);
-
-         */
+        ro = rw.readFile(steggedImagePath); 
 
         final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSB4, encryption::decrypt);
+
+
 
         try (FileOutputStream fos = new FileOutputStream("salida" + unhideOutput.extension())){
             unhideOutput.data().forEach(b -> {

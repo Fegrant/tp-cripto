@@ -129,17 +129,30 @@ public enum SteganographerMethod {
                 else
                     head.add(i, (byte)0b00000000);
             }
-            head.addAll(sparse_data);
-            List<Byte> res = new ArrayList<>();
 
+            // Primeros 4 bytes normal
+            List<Byte> res = new ArrayList<>();
+            for (int i=0 ; i < 4 ; i++) {
+                final byte v1 = imageList.get(i);
+                final byte v2 = head.get(i);
+
+                res.add((byte)(((v1 >> 1) << 1) | v2));
+            }
+
+            int skipped = 0;
             for(int i=0 ; i < imageList.size() ; i++) {
-                if (i == head.size()){
-                    res.addAll(imageList.subList(i, imageList.size()));
+                if ((i + 4) % 3 == 2) {   // Canal R -> Pongo los datos de la imagen original y sigo
+                    res.add(imageList.get(i + 4 - skipped));
+                    skipped++;
+                    continue;
+                }
+                if (i - skipped == sparse_data.size()){
+                    res.addAll(imageList.subList(i + 4, imageList.size()));
                     break;
                 }
 
-                final byte v1 = imageList.get(i);
-                final byte v2 = head.get(i);
+                final byte v1 = imageList.get(i + 4);
+                final byte v2 = sparse_data.get(i - skipped);
 
                 res.add((byte)(((v1 >> 1) << 1) | v2));
             }
