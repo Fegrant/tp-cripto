@@ -22,7 +22,6 @@ public class Main {
 
         ReaderOutput ro = rw.readFile(baseImagePath);
 
-        /*
         final var hideInput = Arrays.stream(Utils.stringToBytes("Hola!")).toList().stream();
         final var hideOutput = steganographer.hide(ro.getData(), hideInput, "hola.txt", SteganographerMethod.LSBI, null);
 
@@ -30,8 +29,6 @@ public class Main {
         rw.writeFile(steggedImagePath, hideOutput, ro.getMetadata());
 
         ro = rw.readFile(steggedImagePath);
-
-         */
 
         final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSBI, null);
 
