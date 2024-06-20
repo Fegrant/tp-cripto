@@ -22,7 +22,7 @@ public class Main {
         final ReaderWriter rw = new BmpReaderWriter();
 
         Path baseImagePath = Path.of("definitive_files/secreto1.bmp");
-//        Path baseImagePath = Path.of("test_files/ladoLSB4.bmp");
+//        Path baseImagePath = Path.of("test_files/ladoLSBIaesofbsalt0.bmp");
 
         ReaderOutput ro = rw.readFile(baseImagePath);
 

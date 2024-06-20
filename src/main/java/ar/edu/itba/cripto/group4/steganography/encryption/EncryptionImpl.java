@@ -3,16 +3,17 @@ package ar.edu.itba.cripto.group4.steganography.encryption;
 import ar.edu.itba.cripto.group4.steganography.ArgumentParser;
 import ar.edu.itba.cripto.group4.steganography.enums.EncryptionMode;
 import ar.edu.itba.cripto.group4.steganography.enums.EncryptionType;
+import org.bouncycastle.crypto.PBEParametersGenerator;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
+import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.crypto.params.ParametersWithIV;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.spec.KeySpec;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class EncryptionImpl implements Encryption {
@@ -61,9 +62,8 @@ public class EncryptionImpl implements Encryption {
     @Override
     public List<Byte> decrypt(List<Byte> data) {
         try {
-
             byte[] dataArray = listToArray(data);
-            System.out.println("Data array size: " + dataArray.length);
+
             Cipher cipher = Cipher.getInstance(encType.getAlgorithm() + "/" + encMode.name() + "/NoPadding");
 
             if (encMode == EncryptionMode.ECB) {
@@ -73,12 +73,6 @@ public class EncryptionImpl implements Encryption {
             }
 
             byte[] decryptedData = cipher.doFinal(dataArray);
-
-            System.out.println("Decrypted data size: " + decryptedData.length);
-            System.out.println("Derived key for decryption (hex): " + bytesToHex(key.getEncoded()));
-            if (encMode != EncryptionMode.ECB) {
-                System.out.println("IV used for decryption (hex): " + bytesToHex(iv.getIV()));
-            }
 
             return arrayToList(decryptedData);
         } catch (Exception e) {
@@ -91,20 +85,17 @@ public class EncryptionImpl implements Encryption {
         try {
             int keySize = encType.getKeySize();
             int ivSize = encType.getAlgorithm().equals("DESede") ? 8 : 16; // 8 bytes for 3DES, 16 bytes for AES
-            byte[] salt = new byte[8]; // 8 bytes of zeros for the salt
-            int iterationCount = 10000; // OpenSSL default iteration count
+            int totalSize = (keySize / byteSize) + ivSize;
+            int iterationCount = 10000; // OpenSSL default iteration count for PBKDF2
 
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterationCount, (keySize + ivSize) * 8); // Multiply by 8 to convert bytes to bits
-            byte[] keyAndIv = factory.generateSecret(spec).getEncoded();
+            // Initialize the BouncyCastle PKCS5S2 generator
+            PKCS5S2ParametersGenerator generator = new PKCS5S2ParametersGenerator(new SHA256Digest());
+            generator.init(PBEParametersGenerator.PKCS5PasswordToUTF8Bytes(password.toCharArray()), null, iterationCount);
 
-            byte[] keyBytes = Arrays.copyOfRange(keyAndIv, 0, keySize / byteSize);
-            byte[] ivBytes = Arrays.copyOfRange(keyAndIv, keySize / byteSize, keySize / byteSize + ivSize);
-
-            System.out.println("Generated key (hex): " + bytesToHex(keyBytes));
-            if (encMode != EncryptionMode.ECB) {
-                System.out.println("Generated IV (hex): " + bytesToHex(ivBytes));
-            }
+            // Generate the key and IV
+            ParametersWithIV keyAndIv = (ParametersWithIV) generator.generateDerivedParameters(keySize, ivSize * 8);
+            byte[] keyBytes = ((KeyParameter) keyAndIv.getParameters()).getKey();
+            byte[] ivBytes = keyAndIv.getIV();
 
             return new byte[][] { keyBytes, ivBytes };
         } catch (Exception e) {
