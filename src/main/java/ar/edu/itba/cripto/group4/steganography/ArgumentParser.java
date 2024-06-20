@@ -1,5 +1,4 @@
 package ar.edu.itba.cripto.group4.steganography;
-
 import ar.edu.itba.cripto.group4.steganography.enums.*;
 import org.apache.commons.cli.*;
 
@@ -57,7 +56,7 @@ public class ArgumentParser {
 
             if (cmd.hasOption("pass")) {
                 password = cmd.getOptionValue("pass");
-                encryptionType = cmd.hasOption("a") ? EncryptionType.getEncryptionType(cmd.getOptionValue("a")) : EncryptionType.AES128;
+                encryptionType = cmd.hasOption("a") ? EncryptionType.fromString(cmd.getOptionValue("a")) : EncryptionType.AES128;
                 encryptionMode = cmd.hasOption("m") ? EncryptionMode.getEncryptionMode(cmd.getOptionValue("m")) : EncryptionMode.CBC;
             } else if (cmd.hasOption("a") || cmd.hasOption("m")) {
                 throw new ParseException("Password must be provided if encryption algorithm or mode is specified.");
@@ -68,11 +67,6 @@ public class ArgumentParser {
             outputFile = cmd.getOptionValue("out");
             stegType = StegType.getStegType(cmd.getOptionValue("steg"));
 
-            if (cmd.hasOption("pass")) {
-                encryptionType = EncryptionType.getEncryptionType(cmd.getOptionValue("a", "aes128"));
-                encryptionMode = EncryptionMode.getEncryptionMode(cmd.getOptionValue("m", "cbc"));
-                password = cmd.getOptionValue("pass");
-            }
 
         } catch (ParseException e) {
             System.err.println("Error: " + e.getMessage());

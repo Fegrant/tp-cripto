@@ -1,5 +1,7 @@
 package ar.edu.itba.cripto.group4.steganography;
 
+import ar.edu.itba.cripto.group4.steganography.encryption.Encryption;
+import ar.edu.itba.cripto.group4.steganography.encryption.EncryptionImpl;
 import ar.edu.itba.cripto.group4.steganography.steganographers.Steganographer;
 import ar.edu.itba.cripto.group4.steganography.steganographers.SteganographerImpl;
 import ar.edu.itba.cripto.group4.steganography.steganographers.SteganographerMethod;
@@ -14,11 +16,13 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        // ArgumentParser argumentParser = new ArgumentParser(args);
+        ArgumentParser argumentParser = new ArgumentParser(args);
+        Encryption encryption = new EncryptionImpl(argumentParser);
         Steganographer steganographer = new SteganographerImpl();
         final ReaderWriter rw = new BmpReaderWriter();
 
-        Path baseImagePath = Path.of("test_files/ladoLSBI.bmp");
+        Path baseImagePath = Path.of("definitive_files/secreto1.bmp");
+//        Path baseImagePath = Path.of("test_files/ladoLSBIaesofbsalt0.bmp");
 
         ReaderOutput ro = rw.readFile(baseImagePath);
 
@@ -28,9 +32,11 @@ public class Main {
         Path steggedImagePath = Path.of("steg.bmp");
         rw.writeFile(steggedImagePath, hideOutput, ro.getMetadata());
 
-        ro = rw.readFile(steggedImagePath);
+        ro = rw.readFile(steggedImagePath); 
 
-        final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSBI, null);
+        final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSB4, encryption::decrypt);
+
+
 
         try (FileOutputStream fos = new FileOutputStream("salida" + unhideOutput.extension())){
             unhideOutput.data().forEach(b -> {

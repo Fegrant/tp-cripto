@@ -56,7 +56,7 @@ public class SteganographerImpl implements Steganographer {
 
         final var dataLen = Utils.intFromBytes(decryptedData.subList(0, 4));
         final var fileData = decryptedData.subList(4, 4 + dataLen);
-        final var stringWithExt = Utils.stringFromBytes(decryptedData.subList(4 + dataLen, decryptedData.size()-2));
+        final var stringWithExt = Utils.stringFromBytes(decryptedData.subList(4 + dataLen, decryptedData.size()-1));
         final String ext = stringWithExt.split("\0", 2)[0];
         
         return new UnhideOutput(fileData, ext);
