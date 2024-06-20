@@ -61,27 +61,23 @@ public class EncryptionImpl implements Encryption {
     @Override
     public List<Byte> decrypt(List<Byte> data) {
         try {
-            // Regenerate key and IV from password
-            byte[][] keyAndIv = generateKeyAndIv("margarita", encType, encMode);
-            SecretKey derivedKey = new SecretKeySpec(keyAndIv[0], encType.getAlgorithm());
-            IvParameterSpec derivedIv = encMode == EncryptionMode.ECB ? null : new IvParameterSpec(keyAndIv[1]);
 
             byte[] dataArray = listToArray(data);
             System.out.println("Data array size: " + dataArray.length);
             Cipher cipher = Cipher.getInstance(encType.getAlgorithm() + "/" + encMode.name() + "/NoPadding");
 
             if (encMode == EncryptionMode.ECB) {
-                cipher.init(Cipher.DECRYPT_MODE, derivedKey);
+                cipher.init(Cipher.DECRYPT_MODE, key);
             } else {
-                cipher.init(Cipher.DECRYPT_MODE, derivedKey, derivedIv);
+                cipher.init(Cipher.DECRYPT_MODE, key, iv);
             }
 
             byte[] decryptedData = cipher.doFinal(dataArray);
 
             System.out.println("Decrypted data size: " + decryptedData.length);
-            System.out.println("Derived key for decryption (hex): " + bytesToHex(derivedKey.getEncoded()));
+            System.out.println("Derived key for decryption (hex): " + bytesToHex(key.getEncoded()));
             if (encMode != EncryptionMode.ECB) {
-                System.out.println("IV used for decryption (hex): " + bytesToHex(derivedIv.getIV()));
+                System.out.println("IV used for decryption (hex): " + bytesToHex(iv.getIV()));
             }
 
             return arrayToList(decryptedData);

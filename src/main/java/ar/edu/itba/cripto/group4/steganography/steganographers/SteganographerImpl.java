@@ -5,6 +5,8 @@ import ar.edu.itba.cripto.group4.steganography.io.Metadata;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,9 +53,8 @@ public class SteganographerImpl implements Steganographer {
         } else {
             decryptedData = unhiddenData;
         }
-        
+
         final var dataLen = Utils.intFromBytes(decryptedData.subList(0, 4));
-        System.out.println(dataLen);
         final var fileData = decryptedData.subList(4, 4 + dataLen);
         final var stringWithExt = Utils.stringFromBytes(decryptedData.subList(4 + dataLen, decryptedData.size()-2));
         final String ext = stringWithExt.split("\0", 2)[0];
