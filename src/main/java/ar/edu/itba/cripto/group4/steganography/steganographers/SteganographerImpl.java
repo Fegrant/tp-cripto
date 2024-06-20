@@ -3,6 +3,8 @@ package ar.edu.itba.cripto.group4.steganography.steganographers;
 import ar.edu.itba.cripto.group4.steganography.Utils;
 import ar.edu.itba.cripto.group4.steganography.io.Metadata;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -29,8 +31,6 @@ public class SteganographerImpl implements Steganographer {
         
         concatenated.addAll(Arrays.asList(Utils.stringToBytes(ext)));
         concatenated.add((byte)0);
-
-        System.out.println(concatenated);
 
         if(encrypt == null) return method.hide(image, concatenated.stream());
         
@@ -81,7 +81,6 @@ public class SteganographerImpl implements Steganographer {
         for (int count : observed) {
             chiSquare += Math.pow(count - expected, 2) / expected;
         }
-        System.out.println(chiSquare);
         return chiSquare > CHI_SQUARED_CRITICAL;
     }
 }

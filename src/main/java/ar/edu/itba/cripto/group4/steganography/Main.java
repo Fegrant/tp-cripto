@@ -8,58 +8,74 @@ import ar.edu.itba.cripto.group4.steganography.steganographers.SteganographerMet
 import ar.edu.itba.cripto.group4.steganography.io.ReaderOutput;
 import ar.edu.itba.cripto.group4.steganography.io.ReaderWriter;
 import ar.edu.itba.cripto.group4.steganography.io.bmp.BmpReaderWriter;
+import ar.edu.itba.cripto.group4.steganography.steganographers.UnhideOutput;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         ArgumentParser argumentParser = new ArgumentParser(args);
-        Encryption encryption = new EncryptionImpl(argumentParser);
-        Steganographer steganographer = new SteganographerImpl();
+
+        Encryption encryption = null;
+        if (argumentParser.getPassword() != null)
+            encryption = new EncryptionImpl(argumentParser);
+
+        final Path bitmapFile = Path.of(argumentParser.getBitmapFile());
         final ReaderWriter rw = new BmpReaderWriter();
+        final ReaderOutput imageRo = rw.readFile(bitmapFile);
 
-        Path baseImagePath = Path.of("definitive_files/secreto1.bmp");
-//        Path baseImagePath = Path.of("test_files/ladoLSBIaesofbsalt0.bmp");
-
-        ReaderOutput ro = rw.readFile(baseImagePath);
-
-        final var hideInput = Arrays.stream(Utils.stringToBytes("Hola!")).toList().stream();
-        final var hideOutput = steganographer.hide(ro.getData(), hideInput, "hola.txt", SteganographerMethod.LSBI, null);
-
-        Path steggedImagePath = Path.of("steg.bmp");
-        rw.writeFile(steggedImagePath, hideOutput, ro.getMetadata());
-
-        ro = rw.readFile(steggedImagePath); 
-
-        final var unhideOutput = steganographer.unhide(ro.getData(), ro.getMetadata(), SteganographerMethod.LSB4, encryption::decrypt);
-
-
-
-        try (FileOutputStream fos = new FileOutputStream("salida" + unhideOutput.extension())){
-            unhideOutput.data().forEach(b -> {
-                try {
-                    fos.write(b);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+        Steganographer steganographer = new SteganographerImpl();
+        SteganographerMethod method = SteganographerMethod.LSB1;
+        switch(argumentParser.getStegType()) {
+            case LSB1 -> method = SteganographerMethod.LSB1;
+            case LSB4 -> method = SteganographerMethod.LSB4;
+            case LSBI -> method = SteganographerMethod.LSBI;
         }
 
-        // rw.writeFile(Path.of("image" + unhideOutput.extension()), unhideOutput.data().stream(), ro.getMetadata());
-        
-        // rw.writeFile(Path.of("ladoLSB1.bmp"), hideOutput, ro.getMetadata());
-        
-        
-//        File bmpFile = new File(path);
-//        boolean isBmpFile = steganographer.analyze(new FileInputStream(bmpFile));
-//
-//        if (isBmpFile) {
-//            System.out.println("Es probable que el archivo BMP contenga datos ocultos");
-//        } else {
-//            System.out.println("Es poco probable que el archivo BMP contenga datos ocultos");
-//        }
+        String outputFile = argumentParser.getOutputFile();
+
+        switch (argumentParser.getActionType()) {
+            case EMBED -> {
+                final String filename = argumentParser.getInputFile();
+                final Stream<Byte> hideOutput = steganographer.hide(imageRo.getData(), readFile(filename), filename, method, encryption != null ? encryption::encrypt : null);
+                writeFile(hideOutput.toList(), outputFile);
+            }
+            case EXTRACT -> {
+                final UnhideOutput unhideOutput = steganographer.unhide(imageRo.getData(), imageRo.getMetadata(), method, encryption != null ? encryption::decrypt : null);
+                writeFile(unhideOutput.data(), outputFile + unhideOutput.extension());
+            }
+        }
+    }
+
+    private static Stream<Byte> readFile(String file) {
+        // TODO: Leer archivo y devolver bytes
+        return new ArrayList<Byte>().stream();
+    }
+
+    private static void writeFile(List<Byte> output, String outputFile) {
+        byte[] outputBytes = new byte[output.size()];
+        for (int i = 0; i < output.size(); i++) {
+            Byte b = output.get(i);
+            outputBytes[i] = b != null ? b : 0;
+        }
+
+        try (FileOutputStream fos = new FileOutputStream(outputFile)){
+            fos.write(outputBytes);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
