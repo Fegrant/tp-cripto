@@ -3,12 +3,8 @@ package ar.edu.itba.cripto.group4.steganography.steganographers;
 import ar.edu.itba.cripto.group4.steganography.Utils;
 import ar.edu.itba.cripto.group4.steganography.io.Metadata;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +17,7 @@ public class SteganographerImpl implements Steganographer {
     private static final double CHI_SQUARED_CRITICAL = 3.841;      // Valor crítico para p=0.05 y 1 grado de libertad
 
     @Override
-    public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data, String dataFilename, SteganographerMethod method, Function<List<Byte>,List<Byte>> encrypt) {
+    public Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data, String dataFilename, SteganographerMethod method, Function<List<Byte>,List<Byte>> encrypt) {
         final var dataList = data.toList();
         final var concatenated = new ArrayList<>(Arrays.asList(Utils.intToBytes(dataList.size())));
         concatenated.addAll(dataList);
@@ -32,18 +28,18 @@ public class SteganographerImpl implements Steganographer {
         concatenated.addAll(Arrays.asList(Utils.stringToBytes(ext)));
         concatenated.add((byte)0);
 
-        if(encrypt == null) return method.hide(image, concatenated.stream());
+        if(encrypt == null) return method.embed(image, concatenated.stream());
         
         final var encData = encrypt.apply(concatenated);
         final var concatenatedEncData = new ArrayList<>(Arrays.asList(Utils.intToBytes(encData.size())));
         concatenatedEncData.addAll(encData);
         
-        return method.hide(image, concatenatedEncData.stream());
+        return method.embed(image, concatenatedEncData.stream());
     }
 
     @Override
-    public UnhideOutput unhide(Stream<Byte> image, Metadata meta, SteganographerMethod method, Function<List<Byte>,List<Byte>> decrypt) {
-        final var unhiddenData = method.unhide(image, meta).toList();
+    public ExtractOutput extract(Stream<Byte> image, Metadata meta, SteganographerMethod method, Function<List<Byte>,List<Byte>> decrypt) {
+        final var unhiddenData = method.extract(image, meta).toList();
         final List<Byte> decryptedData;
         
         if(decrypt != null) {
@@ -59,7 +55,7 @@ public class SteganographerImpl implements Steganographer {
         final var stringWithExt = Utils.stringFromBytes(decryptedData.subList(4 + dataLen, decryptedData.size()-1));
         final String ext = stringWithExt.split("\0", 2)[0];
         
-        return new UnhideOutput(fileData, ext);
+        return new ExtractOutput(fileData, ext);
     }
 
     @Override

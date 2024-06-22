@@ -11,7 +11,7 @@ import ar.edu.itba.cripto.group4.steganography.io.generic.GenericReaderWriter;
 import ar.edu.itba.cripto.group4.steganography.steganographers.Steganographer;
 import ar.edu.itba.cripto.group4.steganography.steganographers.SteganographerImpl;
 import ar.edu.itba.cripto.group4.steganography.steganographers.SteganographerMethod;
-import ar.edu.itba.cripto.group4.steganography.steganographers.UnhideOutput;
+import ar.edu.itba.cripto.group4.steganography.steganographers.ExtractOutput;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -44,15 +44,15 @@ public class Main {
                 case EMBED -> {
                     final var filename = argumentParser.getInputFile();
                     final var ro = genRw.readFile(Path.of(filename));
-                    final Stream<Byte> hideOutput = steganographer.hide(imageRo.getData(), ro.getData(), filename, method, encryption != null ? encryption::encrypt : null);
+                    final Stream<Byte> embedded = steganographer.embed(imageRo.getData(), ro.getData(), filename, method, encryption != null ? encryption::encrypt : null);
 
-                    bmpRw.writeFile(Path.of(outName + ".bmp"), hideOutput, imageRo.getMetadata());
+                    bmpRw.writeFile(Path.of(outName + ".bmp"), embedded, imageRo.getMetadata());
                 }
                 case EXTRACT -> {
-                    final UnhideOutput unhideOutput = steganographer.unhide(imageRo.getData(), imageRo.getMetadata(), method, encryption != null ? encryption::decrypt : null);
-                    final var path = Path.of(outName + unhideOutput.extension());
+                    final ExtractOutput extracted = steganographer.extract(imageRo.getData(), imageRo.getMetadata(), method, encryption != null ? encryption::decrypt : null);
+                    final var path = Path.of(outName + extracted.extension());
 
-                    genRw.writeFile(path, unhideOutput.data().stream(), null);
+                    genRw.writeFile(path, extracted.data().stream(), null);
                 }
             }
         } catch(ReaderException | WriterException e) {

@@ -2,12 +2,8 @@ package ar.edu.itba.cripto.group4.steganography.steganographers;
 
 import ar.edu.itba.cripto.group4.steganography.io.Metadata;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,7 +11,7 @@ import static org.jooq.lambda.Seq.zip;
 
 public enum SteganographerMethod {
     LSB1{
-        public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data) {
+        public Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data) {
             List<Byte> sparse_data = data.flatMap(b -> Stream.of(unnest_bytes(b))).toList();
             List<Byte> imageList = image.toList();
             
@@ -36,7 +32,7 @@ public enum SteganographerMethod {
             return res.stream();
         }
 
-        public Stream<Byte> unhide(Stream<Byte> image, Metadata meta) {
+        public Stream<Byte> extract(Stream<Byte> image, Metadata meta) {
             List<Byte> fileBytesOnBits = image.map(b -> (Byte)(byte)(b & 0x01)).toList();
             Byte[] fileBytes = new Byte[fileBytesOnBits.size() / 8 + 1];
             for(int i=0 ; i < fileBytesOnBits.size() ; i++) {
@@ -56,7 +52,7 @@ public enum SteganographerMethod {
         }
     },
     LSB4{
-        public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data) {
+        public Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data) {
             List<Byte> sparse_data = data.flatMap(b -> Stream.of(unnest_bytes(b))).toList();
             List<Byte> imageList = image.toList();
 
@@ -77,7 +73,7 @@ public enum SteganographerMethod {
             return res.stream();
         }
 
-        public Stream<Byte> unhide(Stream<Byte> image, Metadata meta) {
+        public Stream<Byte> extract(Stream<Byte> image, Metadata meta) {
             List<Byte> fileBytesOnBits = image.map(b -> (byte)(b & 0x0F)).toList();
             Byte[] fileBytes = new Byte[fileBytesOnBits.size() / 2 + 1];
             for(int i=0 ; i < fileBytesOnBits.size() ; i++) {
@@ -100,7 +96,7 @@ public enum SteganographerMethod {
         private static final byte pattern_mask = 0b00000110;
         private static final byte unhide_mask = 0b00000001;
 
-        public Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data) {
+        public Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data) {
             List<Byte> sparse_data = data.flatMap(b -> Stream.of(unnest_bytes(b))).toList();
             List<Byte> imageList = image.toList();
 
@@ -169,7 +165,7 @@ public enum SteganographerMethod {
             return headLSB1.stream();
         }
 
-        public Stream<Byte> unhide(Stream<Byte> image, Metadata meta) {
+        public Stream<Byte> extract(Stream<Byte> image, Metadata meta) {
             List<Boolean> used_patterns = Arrays.stream(meta.getFirstFour()).map(b -> (byte)(b & unhide_mask) == 1).toList();
             image = image.skip(4);
             List<Byte> fileBytesOnBits = new ArrayList<>(image.map(b -> {
@@ -228,7 +224,7 @@ public enum SteganographerMethod {
         }
     };
 
-    abstract Stream<Byte> hide(Stream<Byte> image, Stream<Byte> data);
-    abstract Stream<Byte> unhide(Stream<Byte> image, Metadata meta);
+    abstract Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data);
+    abstract Stream<Byte> extract(Stream<Byte> image, Metadata meta);
 
 }

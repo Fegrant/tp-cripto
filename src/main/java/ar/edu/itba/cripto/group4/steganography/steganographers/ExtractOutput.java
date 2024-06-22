@@ -1,9 +1,8 @@
 package ar.edu.itba.cripto.group4.steganography.steganographers;
 
 import java.util.List;
-import java.util.stream.Stream;
 
-public record UnhideOutput(
+public record ExtractOutput(
     List<Byte> data,
     String extension
 ) {
