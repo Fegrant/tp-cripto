@@ -1,5 +1,6 @@
 package ar.edu.itba.cripto.group4.steganography.io.bmp;
 
+import ar.edu.itba.cripto.group4.steganography.Utils;
 import ar.edu.itba.cripto.group4.steganography.io.*;
 
 import java.io.*;
@@ -46,7 +47,7 @@ public class BmpReaderWriter implements ReaderWriter {
             // Reseteo a la posición inicial
             is.reset();
 
-            var data = makeDataStream(is);
+            var data = Utils.makeDataStream(is);
             var metadata = new BmpMetadata(fileSize, firstFourOut, header, filepath.getFileName().toString());
             return new BmpReaderOutput(metadata, data);
         } catch (IOException e) {
@@ -55,9 +56,8 @@ public class BmpReaderWriter implements ReaderWriter {
             if (is != null) {
                 throw new ReaderException("The file is not a valid BMP.");
             }
+            throw e;
         }
-
-        throw new ReaderException("Unknown error reading file.");
     }
 
     @Override
@@ -76,38 +76,4 @@ public class BmpReaderWriter implements ReaderWriter {
         }
     }
 
-    private Stream<Byte> makeDataStream(InputStream is) {
-        final Iterator<Byte> iter = new Iterator<>() {
-            int next;
-
-            @Override
-            public boolean hasNext() {
-                try {
-                    next = is.read();
-
-                    if (next != -1) return true;
-
-                    is.close();
-                    return false;
-                } catch (IOException e) {
-                    try {
-                        is.close();
-                    } catch (IOException ignored) {
-                    }
-
-                    throw new IllegalArgumentException(e);
-                }
-            }
-
-            @Override
-            public Byte next() {
-                if (next == -1) throw new NoSuchElementException();
-                return (byte) next;
-            }
-        };
-
-        Iterable<Byte> iterable = () -> iter;
-
-        return StreamSupport.stream(iterable.spliterator(), false);
-    }
 }

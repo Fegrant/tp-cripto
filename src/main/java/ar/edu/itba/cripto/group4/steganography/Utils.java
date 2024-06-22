@@ -1,9 +1,15 @@
 package ar.edu.itba.cripto.group4.steganography;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class Utils {
     private Utils() {}
@@ -44,5 +50,40 @@ public class Utils {
         }
         
         return new String(ba, StandardCharsets.UTF_8);
+    }
+    
+    public static Stream<Byte> makeDataStream(InputStream is) {
+        final Iterator<Byte> iter = new Iterator<>() {
+            int next;
+
+            @Override
+            public boolean hasNext() {
+                try {
+                    next = is.read();
+
+                    if (next != -1) return true;
+
+                    is.close();
+                    return false;
+                } catch (IOException e) {
+                    try {
+                        is.close();
+                    } catch (IOException ignored) {
+                    }
+
+                    throw new IllegalArgumentException(e);
+                }
+            }
+
+            @Override
+            public Byte next() {
+                if (next == -1) throw new NoSuchElementException();
+                return (byte) next;
+            }
+        };
+
+        Iterable<Byte> iterable = () -> iter;
+
+        return StreamSupport.stream(iterable.spliterator(), false);
     }
 }
