@@ -17,7 +17,7 @@ public class SteganographerImpl implements Steganographer {
     private static final double CHI_SQUARED_CRITICAL = 3.841;      // Valor crítico para p=0.05 y 1 grado de libertad
 
     @Override
-    public Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data, String dataFilename, SteganographerMethod method, Function<List<Byte>,List<Byte>> encrypt) {
+    public Stream<Byte> embed(Stream<Byte> image, Metadata meta, Stream<Byte> data, Metadata dataMeta, String dataFilename, SteganographerMethod method, Function<List<Byte>,List<Byte>> encrypt) {
         final var dataList = data.toList();
         final var concatenated = new ArrayList<>(Arrays.asList(Utils.intToBytes(dataList.size())));
         concatenated.addAll(dataList);
@@ -28,13 +28,13 @@ public class SteganographerImpl implements Steganographer {
         concatenated.addAll(Arrays.asList(Utils.stringToBytes(ext)));
         concatenated.add((byte)0);
 
-        if(encrypt == null) return method.embed(image, concatenated.stream());
+        if(encrypt == null) return method.embed(image, meta, concatenated.stream(), dataMeta.getTotalFileSize());
         
         final var encData = encrypt.apply(concatenated);
         final var concatenatedEncData = new ArrayList<>(Arrays.asList(Utils.intToBytes(encData.size())));
         concatenatedEncData.addAll(encData);
         
-        return method.embed(image, concatenatedEncData.stream());
+        return method.embed(image, meta, concatenatedEncData.stream(), dataMeta.getTotalFileSize());
     }
 
     @Override

@@ -8,10 +8,7 @@ import ar.edu.itba.cripto.group4.steganography.io.ReaderWriter;
 import ar.edu.itba.cripto.group4.steganography.io.WriterException;
 import ar.edu.itba.cripto.group4.steganography.io.bmp.BmpReaderWriter;
 import ar.edu.itba.cripto.group4.steganography.io.generic.GenericReaderWriter;
-import ar.edu.itba.cripto.group4.steganography.steganographers.Steganographer;
-import ar.edu.itba.cripto.group4.steganography.steganographers.SteganographerImpl;
-import ar.edu.itba.cripto.group4.steganography.steganographers.SteganographerMethod;
-import ar.edu.itba.cripto.group4.steganography.steganographers.ExtractOutput;
+import ar.edu.itba.cripto.group4.steganography.steganographers.*;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -44,7 +41,7 @@ public class Main {
                 case EMBED -> {
                     final var filename = argumentParser.getInputFile();
                     final var ro = genRw.readFile(Path.of(filename));
-                    final Stream<Byte> embedded = steganographer.embed(imageRo.getData(), ro.getData(), filename, method, encryption != null ? encryption::encrypt : null);
+                    final Stream<Byte> embedded = steganographer.embed(imageRo.getData(), imageRo.getMetadata(), ro.getData(), ro.getMetadata(), filename, method, encryption != null ? encryption::encrypt : null);
 
                     bmpRw.writeFile(Path.of(outName + ".bmp"), embedded, imageRo.getMetadata());
                 }
@@ -57,6 +54,10 @@ public class Main {
             }
         } catch(ReaderException | WriterException e) {
             System.err.println(e.getMessage());
+            System.exit(-1);
+        } catch(BiggerThanCapacityException e) {
+            System.err.println("Data is too big to be embedded in the image");
+            System.exit(-1);
         }
     }
 }

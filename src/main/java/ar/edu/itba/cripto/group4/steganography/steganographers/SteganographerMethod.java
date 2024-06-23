@@ -11,7 +11,10 @@ import static org.jooq.lambda.Seq.zip;
 
 public enum SteganographerMethod {
     LSB1{
-        public Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data) {
+        public Stream<Byte> embed(Stream<Byte> image, Metadata meta, Stream<Byte> data, long dataSize) {
+            if(dataSize > meta.getDataSize() / 8)
+                throw new BiggerThanCapacityException();
+            
             List<Byte> sparse_data = data.flatMap(b -> Stream.of(unnest_bytes(b))).toList();
             List<Byte> imageList = image.toList();
             
@@ -52,7 +55,10 @@ public enum SteganographerMethod {
         }
     },
     LSB4{
-        public Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data) {
+        public Stream<Byte> embed(Stream<Byte> image, Metadata meta, Stream<Byte> data, long dataSize) {
+            if(dataSize > meta.getDataSize() / 2)
+                throw new BiggerThanCapacityException();
+            
             List<Byte> sparse_data = data.flatMap(b -> Stream.of(unnest_bytes(b))).toList();
             List<Byte> imageList = image.toList();
 
@@ -96,7 +102,10 @@ public enum SteganographerMethod {
         private static final byte pattern_mask = 0b00000110;
         private static final byte unhide_mask = 0b00000001;
 
-        public Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data) {
+        public Stream<Byte> embed(Stream<Byte> image, Metadata meta, Stream<Byte> data, long dataSize) {
+            if(dataSize > meta.getDataSize() / 8 - 4)
+                throw new BiggerThanCapacityException();
+            
             List<Byte> sparse_data = data.flatMap(b -> Stream.of(unnest_bytes(b))).toList();
             List<Byte> imageList = image.toList();
 
@@ -224,7 +233,7 @@ public enum SteganographerMethod {
         }
     };
 
-    abstract Stream<Byte> embed(Stream<Byte> image, Stream<Byte> data);
+    abstract Stream<Byte> embed(Stream<Byte> image, Metadata meta, Stream<Byte> data, long dataSize);
     abstract Stream<Byte> extract(Stream<Byte> image, Metadata meta);
 
 }
