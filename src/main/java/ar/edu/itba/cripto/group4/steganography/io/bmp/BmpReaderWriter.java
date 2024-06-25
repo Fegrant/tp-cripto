@@ -51,10 +51,10 @@ public class BmpReaderWriter implements ReaderWriter {
             var metadata = new BmpMetadata(fileSize, firstFourOut, header, filepath.getFileName().toString());
             return new BmpReaderOutput(metadata, data);
         } catch (IOException e) {
-            throw new ReaderException("Could not read the file.");
+            throw new ReaderException("Could not read the file '" + filepath + "'.");
         } catch (IllegalArgumentException e) {
             if (is != null) {
-                throw new ReaderException("The file is not a valid BMP.");
+                throw new ReaderException("The file '" + filepath + "' is not a valid BMP.");
             }
             throw e;
         }

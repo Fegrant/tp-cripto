@@ -43,7 +43,7 @@ public class Main {
                     final var ro = genRw.readFile(Path.of(filename));
                     final Stream<Byte> embedded = steganographer.embed(imageRo.getData(), imageRo.getMetadata(), ro.getData(), ro.getMetadata(), filename, method, encryption != null ? encryption::encrypt : null);
 
-                    bmpRw.writeFile(Path.of(outName + ".bmp"), embedded, imageRo.getMetadata());
+                    bmpRw.writeFile(Path.of(outName), embedded, imageRo.getMetadata());
                 }
                 case EXTRACT -> {
                     final ExtractOutput extracted = steganographer.extract(imageRo.getData(), imageRo.getMetadata(), method, encryption != null ? encryption::decrypt : null);
@@ -52,11 +52,8 @@ public class Main {
                     genRw.writeFile(path, extracted.data().stream(), null);
                 }
             }
-        } catch(ReaderException | WriterException e) {
+        } catch(ReaderException | WriterException | NoHiddenDataException | BiggerThanCapacityException e) {
             System.err.println(e.getMessage());
-            System.exit(-1);
-        } catch(BiggerThanCapacityException e) {
-            System.err.println("Data is too big to be embedded in the image");
             System.exit(-1);
         }
     }
