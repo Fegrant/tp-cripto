@@ -4,5 +4,6 @@ import java.util.stream.Stream;
 
 public interface ReaderOutput {
     Stream<Byte> getData();
+
     Metadata getMetadata();
 }

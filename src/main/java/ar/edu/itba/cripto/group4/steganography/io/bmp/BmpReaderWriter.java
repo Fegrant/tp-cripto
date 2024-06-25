@@ -28,7 +28,7 @@ public class BmpReaderWriter implements ReaderWriter {
                 ((header[3] & 0xff) << 8) | (header[2] & 0xff);
 
             int dataOffset = ((header[13] & 0xff) << 24) | ((header[12] & 0xff) << 16) |
-                    ((header[11] & 0xff) << 8) | (header[10] & 0xff);
+                ((header[11] & 0xff) << 8) | (header[10] & 0xff);
 
             is.readNBytes(dataOffset - HEADER_SIZE);
 
@@ -59,11 +59,11 @@ public class BmpReaderWriter implements ReaderWriter {
 
     @Override
     public void writeFile(Path filepath, Stream<Byte> data, Metadata meta) {
-        try(final var outStream = new BufferedOutputStream(new FileOutputStream(filepath.toString()))) {
+        try (final var outStream = new BufferedOutputStream(new FileOutputStream(filepath.toString()))) {
             outStream.write(meta.getHeader());
             data.forEach(b -> {
                 try {
-                    outStream.write((int)b % 0xFF);
+                    outStream.write((int) b % 0xFF);
                 } catch (IOException e) {
                     throw new WriterException("Error writing data to file.");
                 }

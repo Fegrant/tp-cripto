@@ -52,7 +52,7 @@ public class Main {
                     genRw.writeFile(path, extracted.data().stream(), null);
                 }
             }
-        } catch(ReaderException | WriterException | NoHiddenDataException | BiggerThanCapacityException e) {
+        } catch (ReaderException | WriterException | NoHiddenDataException | BiggerThanCapacityException e) {
             System.err.println(e.getMessage());
             System.exit(-1);
         }

@@ -87,7 +87,7 @@ public class EncryptionImpl implements Encryption {
             byte[] keyBytes = ((KeyParameter) keyAndIv.getParameters()).getKey();
             byte[] ivBytes = keyAndIv.getIV();
 
-            return new byte[][] { keyBytes, ivBytes };
+            return new byte[][]{keyBytes, ivBytes};
         } catch (Exception e) {
             throw new RuntimeException("Error generating key and IV", e);
         }

@@ -16,11 +16,11 @@ public class GenericReaderWriter implements ReaderWriter {
             final var size = Files.size(filepath);
 
             is = new BufferedInputStream(new FileInputStream(filepath.toString()));
-            
-           var data = Utils.makeDataStream(is);
-           var metadata = new GenericMetadata((int)size, filepath.getFileName().toString());
-           
-           return new GenericReaderOutput(data, metadata);
+
+            var data = Utils.makeDataStream(is);
+            var metadata = new GenericMetadata((int) size, filepath.getFileName().toString());
+
+            return new GenericReaderOutput(data, metadata);
         } catch (IOException e) {
             throw new ReaderException("Could not read the file.");
         }
@@ -28,15 +28,15 @@ public class GenericReaderWriter implements ReaderWriter {
 
     @Override
     public void writeFile(Path filepath, Stream<Byte> data, Metadata meta) {
-        try(final var os = new BufferedOutputStream(new FileOutputStream(filepath.toString()))) {
+        try (final var os = new BufferedOutputStream(new FileOutputStream(filepath.toString()))) {
             data.forEach(b -> {
                 try {
-                    os.write((int)b % 0xFF);
+                    os.write((int) b % 0xFF);
                 } catch (IOException e) {
                     throw new WriterException("Error writing data to file");
                 }
             });
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new WriterException("Error writing file");
         }
     }

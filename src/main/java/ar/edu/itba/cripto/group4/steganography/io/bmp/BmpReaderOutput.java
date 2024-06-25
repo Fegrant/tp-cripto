@@ -5,7 +5,7 @@ import ar.edu.itba.cripto.group4.steganography.io.ReaderOutput;
 
 import java.util.stream.Stream;
 
-public record BmpReaderOutput (
+public record BmpReaderOutput(
     Metadata metadata,
     Stream<Byte> data
 ) implements ReaderOutput {
