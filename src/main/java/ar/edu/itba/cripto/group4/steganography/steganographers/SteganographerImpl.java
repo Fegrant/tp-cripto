@@ -28,13 +28,13 @@ public class SteganographerImpl implements Steganographer {
         concatenated.addAll(Arrays.asList(Utils.stringToBytes(ext)));
         concatenated.add((byte)0);
 
-        if(encrypt == null) return method.embed(image, meta, concatenated.stream(), dataMeta.getTotalFileSize());
+        if(encrypt == null) return method.embed(image, meta, concatenated.stream(), concatenated.size());
         
         final var encData = encrypt.apply(concatenated);
         final var concatenatedEncData = new ArrayList<>(Arrays.asList(Utils.intToBytes(encData.size())));
         concatenatedEncData.addAll(encData);
         
-        return method.embed(image, meta, concatenatedEncData.stream(), dataMeta.getTotalFileSize());
+        return method.embed(image, meta, concatenatedEncData.stream(), concatenatedEncData.size());
     }
 
     @Override
@@ -51,6 +51,8 @@ public class SteganographerImpl implements Steganographer {
         }
 
         final var dataLen = Utils.intFromBytes(decryptedData.subList(0, 4));
+        if(dataLen > decryptedData.size()-4) throw new NoHiddenDataException();
+        
         final var fileData = decryptedData.subList(4, 4 + dataLen);
         final var stringWithExt = Utils.stringFromBytes(decryptedData.subList(4 + dataLen, decryptedData.size()-1));
         final String ext = stringWithExt.split("\0", 2)[0];
