@@ -38,6 +38,7 @@ public class SteganographerImpl implements Steganographer {
 
         if (decrypt != null) {
             final var dataLen = Utils.intFromBytes(unhiddenData.subList(0, 4));
+            if(dataLen < 0) throw new NoHiddenDataException();
             final var encData = unhiddenData.subList(4, dataLen + 4);
             decryptedData = decrypt.apply(encData);
         } else {
