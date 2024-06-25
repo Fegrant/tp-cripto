@@ -17,18 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EncryptionImpl implements Encryption {
+    private final EncryptionType encType;
+    private final EncryptionMode encMode;
+    private final SecretKey key;
+    private final IvParameterSpec iv;
 
-    private EncryptionType encType;
-    private EncryptionMode encMode;
-    private SecretKey key;
-    private IvParameterSpec iv;
-
-    static Integer byteSize = 8;
 
     public EncryptionImpl(ArgumentParser argumentParser) {
         this.encType = argumentParser.getEncryptionType();
         this.encMode = argumentParser.getEncryptionMode();
-        byte[][] keyAndIv = generateKeyAndIv(argumentParser.getPassword(), encType, encMode);
+        byte[][] keyAndIv = generateKeyAndIv(argumentParser.getPassword(), encType);
         this.key = new SecretKeySpec(keyAndIv[0], encType.getAlgorithm());
         this.iv = encMode == EncryptionMode.ECB ? null : new IvParameterSpec(keyAndIv[1]);
     }
@@ -49,8 +47,7 @@ public class EncryptionImpl implements Encryption {
 
             return arrayToList(encryptedData);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            throw new RuntimeException("Error encrypting data", e);
         }
     }
 
@@ -71,16 +68,14 @@ public class EncryptionImpl implements Encryption {
 
             return arrayToList(decryptedData);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            throw new RuntimeException("Error decrypting data", e);
         }
     }
 
-    private byte[][] generateKeyAndIv(String password, EncryptionType encType, EncryptionMode encMode) {
+    private byte[][] generateKeyAndIv(String password, EncryptionType encType) {
         try {
             int keySize = encType.getKeySize();
             int ivSize = encType.getAlgorithm().equals("DESede") ? 8 : 16; // 8 bytes for 3DES, 16 bytes for AES
-            int totalSize = (keySize / byteSize) + ivSize;
             int iterationCount = 10000; // OpenSSL default iteration count for PBKDF2
 
             // Initialize the BouncyCastle PKCS5S2 generator
@@ -112,13 +107,5 @@ public class EncryptionImpl implements Encryption {
             list.add(b);
         }
         return list;
-    }
-
-    private String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
     }
 }

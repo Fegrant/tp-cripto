@@ -6,10 +6,7 @@ import ar.edu.itba.cripto.group4.steganography.io.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class BmpReaderWriter implements ReaderWriter {
     private static final int HEADER_SIZE = 54;

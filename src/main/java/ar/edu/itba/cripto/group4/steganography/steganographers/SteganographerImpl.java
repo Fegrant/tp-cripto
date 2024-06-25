@@ -3,8 +3,6 @@ package ar.edu.itba.cripto.group4.steganography.steganographers;
 import ar.edu.itba.cripto.group4.steganography.Utils;
 import ar.edu.itba.cripto.group4.steganography.io.Metadata;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,12 +10,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class SteganographerImpl implements Steganographer {
-
-    private static final int HEADER_SIZE = 54;
-    private static final double CHI_SQUARED_CRITICAL = 3.841;      // Valor crítico para p=0.05 y 1 grado de libertad
-
     @Override
-    public Stream<Byte> embed(Stream<Byte> image, Metadata meta, Stream<Byte> data, Metadata dataMeta, String dataFilename, SteganographerMethod method, Function<List<Byte>,List<Byte>> encrypt) {
+    public Stream<Byte> embed(Stream<Byte> image, Metadata meta, Stream<Byte> data, String dataFilename, SteganographerMethod method, Function<List<Byte>,List<Byte>> encrypt) {
         final var dataList = data.toList();
         final var concatenated = new ArrayList<>(Arrays.asList(Utils.intToBytes(dataList.size())));
         concatenated.addAll(dataList);
@@ -58,27 +52,5 @@ public class SteganographerImpl implements Steganographer {
         final String ext = stringWithExt.split("\0", 2)[0];
         
         return new ExtractOutput(fileData, ext);
-    }
-
-    @Override
-    public boolean analyze(InputStream is) throws IOException {
-        // TODO: Ver otros métodos (ahora usa análisis chi-cuadrado de bits menos significativos)
-        is.skip(HEADER_SIZE);
-        byte[] imageData = is.readAllBytes();
-        // Guarda la cantidad de '1' y '0' en los bits menos significativos
-        int[] bitCounts = new int[2];
-        for (byte imageDatum : imageData) {
-            bitCounts[imageDatum & 1]++;
-        }
-
-        return chiSquareTest(bitCounts, imageData.length / 2.0);
-    }
-
-    private boolean chiSquareTest(int[] observed, double expected) {
-        double chiSquare = 0;
-        for (int count : observed) {
-            chiSquare += Math.pow(count - expected, 2) / expected;
-        }
-        return chiSquare > CHI_SQUARED_CRITICAL;
     }
 }

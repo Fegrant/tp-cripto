@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.jooq.lambda.Seq.zip;
-
 public enum SteganographerMethod {
     LSB1{
         public Stream<Byte> embed(Stream<Byte> image, Metadata meta, Stream<Byte> data, long dataSize) {
@@ -98,7 +96,6 @@ public enum SteganographerMethod {
         }
     },
     LSBI {
-        private static final byte[] patterns = new byte[]{0b00000000, 0b00000010, 0b00000100, 0b00000110};
         private static final byte pattern_mask = 0b00000110;
         private static final byte unhide_mask = 0b00000001;
 
@@ -215,21 +212,8 @@ public enum SteganographerMethod {
         private static int[] signed_get_pattern(Byte img_byte, boolean sign) {
             byte image_pattern = (byte)(img_byte & pattern_mask);
             int[] ret = new int[]{0, 0, 0, 0};
-            // int index = pattern_index(image_pattern);
-            // ret[index] = sign ? 1 : -1;
             ret[image_pattern >> 1] = sign ? 1 : -1;
             return ret;
-        }
-
-        private static int pattern_index(byte pattern) {
-            int index = -1;
-            for (int i = 0; i < patterns.length; i++) {
-                if (patterns[i] == pattern) {
-                    index = i;
-                    break;
-                }
-            }
-            return index;
         }
     };
 

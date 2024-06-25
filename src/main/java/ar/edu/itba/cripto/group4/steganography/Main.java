@@ -41,7 +41,7 @@ public class Main {
                 case EMBED -> {
                     final var filename = argumentParser.getInputFile();
                     final var ro = genRw.readFile(Path.of(filename));
-                    final Stream<Byte> embedded = steganographer.embed(imageRo.getData(), imageRo.getMetadata(), ro.getData(), ro.getMetadata(), filename, method, encryption != null ? encryption::encrypt : null);
+                    final Stream<Byte> embedded = steganographer.embed(imageRo.getData(), imageRo.getMetadata(), ro.getData(), filename, method, encryption != null ? encryption::encrypt : null);
 
                     bmpRw.writeFile(Path.of(outName), embedded, imageRo.getMetadata());
                 }
