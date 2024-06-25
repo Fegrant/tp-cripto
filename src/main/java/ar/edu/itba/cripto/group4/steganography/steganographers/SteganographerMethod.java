@@ -100,7 +100,7 @@ public enum SteganographerMethod {
         private static final byte unhide_mask = 0b00000001;
 
         public Stream<Byte> embed(Stream<Byte> image, Metadata meta, Stream<Byte> data, long dataSize) {
-            if (dataSize > meta.getDataSize() / 8 - 4)
+            if (dataSize > (meta.getDataSize() / 3 * 2) / 8 - 4)
                 throw new BiggerThanCapacityException();
 
             List<Byte> sparse_data = data.flatMap(b -> Stream.of(unnest_bytes(b))).toList();
