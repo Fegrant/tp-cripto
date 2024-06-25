@@ -47,11 +47,6 @@ public class EncryptionImpl implements Encryption {
             byte[] dataBytes = listToArray(data);
             byte[] encryptedData = cipher.doFinal(dataBytes);
 
-            System.out.println("Encrypted data size: " + encryptedData.length);
-            if (encMode != EncryptionMode.ECB) {
-                System.out.println("IV used for encryption (hex): " + bytesToHex(iv.getIV()));
-            }
-
             return arrayToList(encryptedData);
         } catch (Exception e) {
             e.printStackTrace();
